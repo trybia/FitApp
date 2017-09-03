@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^registration$', UserFormView.as_view(), name='register'),
     url(r'^home$', showMyHome, name='home'),
     url(r'^logout$', logout_view, name='logout'),
-    url(r'^newuserform/(?P<id>\d+)$', NewUserDataCreate.as_view(), name='userform'),
+    url(r'^profile$', NewUserProfileCreate.as_view(), name='profile'),
 
 
 ]

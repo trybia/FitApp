@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from Fitapp.models import UserData
+from Fitapp.models import UserProfile
 
 
 class UserForm(forms.ModelForm):
@@ -16,9 +16,7 @@ class LoginForm(forms.Form):
     login = forms.CharField(label='Login')
     password = forms.CharField(widget=forms.PasswordInput)
 
-
-class AddUserDataForm(forms.ModelForm):
-
+class AddUserProfileForm(forms.Form):
     class Meta:
-        model = UserData
-        exclude = ('name', )
+        model = UserProfile
+        exclude = ('user',)

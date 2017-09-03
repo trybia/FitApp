@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views import generic
 from django.views.generic import View, CreateView
 from .forms import *
 # Create your views here.
@@ -64,23 +66,26 @@ class ShowLoginView(View):
 def thanks(request):
     return HttpResponse('Dziekujemy za wypełnienie formularza')
 
-class NewUserDataCreate(CreateView):
-    model = UserData
+class NewUserProfileCreate(CreateView):
+    model = UserProfile
     fields = '__all__'
     template_name = 'index.html'
-    success_url = '/thanks'
+    success_url = reverse_lazy ('home')
 
-class AddUserDataView(View):
+class AddUserProfileView(generic.View):
+    model = UserProfile
     def get(self, request):
         user = request.user
         if user.is_authenticated:
-            form = AddUserDataForm
+            form = AddUserProfileForm
             return render(request, 'index.html', {'form':form})
         else:
             return redirect('/login')
     def post(self, request):
-        form = AddUserDataForm(request.POST)
+        user = User.objects.get(request.user.id)
+        form = AddUserProfileForm(request.POST)
         if form.is_valid():
+
             form.save()
             return HttpResponse('Formularz został wypełniony.')
         else:
