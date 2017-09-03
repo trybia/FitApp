@@ -16,7 +16,7 @@ class LoginForm(forms.Form):
     login = forms.CharField(label='Login')
     password = forms.CharField(widget=forms.PasswordInput)
 
-class AddUserProfileForm(forms.Form):
+class AddUserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         exclude = ('user',)

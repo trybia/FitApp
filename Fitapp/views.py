@@ -1,4 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -72,23 +75,37 @@ class NewUserProfileCreate(CreateView):
     template_name = 'index.html'
     success_url = reverse_lazy ('home')
 
-class AddUserProfileView(generic.View):
-    model = UserProfile
-    def get(self, request):
-        user = request.user
-        if user.is_authenticated:
-            form = AddUserProfileForm
-            return render(request, 'index.html', {'form':form})
+# class AddUserProfileView(generic.View):
+#     model = UserProfile
+#     def get(self, request):
+#         user = request.user
+#         if user.is_authenticated:
+#             form = AddUserProfileForm
+#             return render(request, 'index.html', {'form':form})
+#         else:
+#             return redirect('/login')
+#     def post(self, request):
+#         user = User.objects.get(request.user.id)
+#         form = AddUserProfileForm(request.POST)
+#         if form.is_valid():
+#
+#             form.save()
+#             return HttpResponse('Formularz został wypełniony.')
+#         else:
+#             return render(request, 'index.html', {'form':form})
+@login_required
+@transaction.atomic
+def update_profile(request):
+    if request.method == 'POST':
+        profile_form = AddUserProfileForm(request.POST, instance=request.user.userprofile)
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect('home')
         else:
-            return redirect('/login')
-    def post(self, request):
-        user = User.objects.get(request.user.id)
-        form = AddUserProfileForm(request.POST)
-        if form.is_valid():
-
-            form.save()
-            return HttpResponse('Formularz został wypełniony.')
-        else:
-            return render(request, 'index.html', {'form':form})
-
+            messages.error(request, ('Please correct the error below.'))
+    else:
+        profile_form = AddUserProfileForm(instance=request.user.userprofile)
+    return render(request, 'updateprofile.html', {
+        'profile_form': profile_form
+    })
 
