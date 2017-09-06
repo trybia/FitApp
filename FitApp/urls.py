@@ -16,13 +16,15 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from Fitapp.views import *
+from django.contrib.auth.views import login
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^login$', ShowLoginView.as_view(), name='login'),
+    url(r'^login$', LoginView.as_view(), name='login'),
     url(r'^registration$', UserFormView.as_view(), name='register'),
-    url(r'^home$', showMyHome, name='home'),
-    url(r'^logout$', logout_view, name='logout'),
+    url(r'$', MyHome, name='home'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout', kwargs={'next_page': 'home'}
+    ),
     # url(r'^profile$', NewUserProfileCreate.as_view(), name='profile'),
     url(r'^profile$',update_profile),
 ]

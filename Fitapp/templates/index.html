@@ -2,13 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>FitApp</title>
 </head>
 <body>
-    <form action="" method="post" style="background-color:{{ color }}">
-        {% csrf_token %}
-        <p>{{ form.as_p }}</p>
-        <input type="submit" value="Wyślij">
-    </form>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">FitApp</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Klienci</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Kalendarz</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Treningi</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<footer>
+    {% if user.is_authenticated %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h6 class="display-6">{{ form.as_p }}</h6>
+                <p class="lead">Bacon ipsum dolor amet flank spare ribs t-bone sirloin shank.</p>
+                    <hr class="my-4">
+                <p>Chicken strip steak pancetta tail porchetta swine tri-tip beef ribs ham hock shoulder alcatra corned beef cow turkey cupim.</p>
+            <p class="lead">
+                <div class="alert alert-secondary" role="alert">
+  Po zalogowaniu się <a href="/profile" class="alert-link">wypełnij formularz</a>.
+
+    </div>
+    </div>
+    <a href="/logout">Wyloguj się</a>
+    {% else %}
+    <div class="jumbotron">
+  <h4 class="display-4">Hello, world!</h4>
+  <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+  <hr class="my-4">
+  <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+  <p class="lead">
+    <a class="btn btn-outline-secondary btn-lg" href="/login" role="button">Zaloguj się</a>
+      <a class="btn btn-outline-secondary btn-lg" href="/registration" role="button">Zarejestruj się</a>
+  </p>
+</div>
+
+    {% endif %}
+</footer>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>

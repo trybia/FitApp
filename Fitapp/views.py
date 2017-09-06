@@ -7,51 +7,49 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import View, CreateView
+
 from .forms import *
 # Create your views here.
+
 #tworzenie użytkownika i logowanie
 class UserFormView(View):
-    form_class = UserForm
-    template_name = 'index.html'
 
     def get(self, request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {'form':form})
+        form = UserForm
+        return render(request, 'useradd.html', {'form':form})
 
     def post(self, request):
-        form = self.form_class(request.POST)
+        form = UserForm(request.POST)
 
         if form.is_valid():
             user = form.save(commit=False)
-
             username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            password = form.cleaned_data['password1']
             user.set_password(password)
-            user.save()
-
+            form.save()
             user = authenticate(username=username, password=password)
-
             if user is not None:
                 if user.is_active:
                     login(request, user)
                     return redirect('home')
+        else:
+            return render(request, 'useradd.html', {'form':form})
 
-        return render(request, self.template_name, {'form': form})
 
 
-def showMyHome(request):
-    return render(request, 'home.html')
+def MyHome(request):
+    return render(request, 'index.html')
 
-#wylogowanie
-def logout_view(request):
-    logout(request)
-    return redirect('home')
+# #wylogowanie
+# def logout_view(request):
+#     logout(request)
+#     return redirect('home')
 
 #logowanie
-class ShowLoginView(View):
+class LoginView(View):
     def get(self, request):
         form = LoginForm
-        return render(request, 'index.html', {'form':form})
+        return render(request, 'useradd.html', {'form':form})
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -61,51 +59,43 @@ class ShowLoginView(View):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return render(request, 'home.html')
+                return render(request, 'index.html')
             else:
                 return HttpResponse('Nie udało się zalogować')
 
 
-def thanks(request):
-    return HttpResponse('Dziekujemy za wypełnienie formularza')
 
-class NewUserProfileCreate(CreateView):
+class UserProfileCreate(CreateView):
     model = UserProfile
     fields = '__all__'
-    template_name = 'index.html'
+    template_name = 'useradd.html'
     success_url = reverse_lazy ('home')
 
-# class AddUserProfileView(generic.View):
-#     model = UserProfile
-#     def get(self, request):
-#         user = request.user
-#         if user.is_authenticated:
-#             form = AddUserProfileForm
-#             return render(request, 'index.html', {'form':form})
-#         else:
-#             return redirect('/login')
-#     def post(self, request):
-#         user = User.objects.get(request.user.id)
-#         form = AddUserProfileForm(request.POST)
-#         if form.is_valid():
-#
-#             form.save()
-#             return HttpResponse('Formularz został wypełniony.')
-#         else:
-#             return render(request, 'index.html', {'form':form})
+
+#dodawanie profilu do utworzonego użytkownika
 @login_required
-@transaction.atomic
+#@transaction.atomic
 def update_profile(request):
     if request.method == 'POST':
-        profile_form = AddUserProfileForm(request.POST, instance=request.user.userprofile)
+        if request.user.userprofile.type == 100:
+            profile_form = ManagerProfileForm(request.POST, instance=request.user.userprofile)
+        else:
+            profile_form = UserProfileForm(request.POST, instance=request.user.userprofile)
+
         if profile_form.is_valid():
             profile_form.save()
             return redirect('home')
         else:
-            messages.error(request, ('Please correct the error below.'))
+            messages.error(request, ('Proszę poprawić bląd.'))
     else:
-        profile_form = AddUserProfileForm(instance=request.user.userprofile)
-    return render(request, 'updateprofile.html', {
+
+        if request.user.userprofile.type == 100:
+            profile_form = ManagerProfileForm(instance=request.user.userprofile)
+        else:
+            profile_form = UserProfileForm(instance=request.user.userprofile)
+
+        return render(request, 'updateprofile.html', {
         'profile_form': profile_form
+
     })
 
