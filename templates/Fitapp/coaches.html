@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block body %}
+
+{# wygląd tabeli: https://datatables.net/examples/styling/bootstrap.html #}
+<header></header>
+<section class="section section-padded" style="top: -600px;">
+	<div class="container">
+    <div class="table-responsive">
+    <table id="example" class="table table-striped table-hover table-condensed">
+        <thead>
+            <tr>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Opcje</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for coach in coaches %}
+        <tr>
+            <td>{{ coach.first_name }}</td>
+            <td>{{ coach.last_name }}</td>
+            <td></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if coaches.has_previous %}
+            <a href="?page={{ coaches.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ coaches.number }} of {{ coaches.paginator.num_pages }}.
+        </span>
+
+        {% if coaches.has_next %}
+            <a href="?page={{ coaches.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+</div>
+{% endblock %}
+{% block footer %}
+{% endblock %}
