@@ -31,16 +31,16 @@ TYPE = (
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.DateField(verbose_name='Wiek', null=True)
-    height = models.FloatField(verbose_name='Wzrost', null=True)
-    weight = models.FloatField(verbose_name='Waga', null=True)
-    sex = models.IntegerField(choices=SEX, verbose_name='Płeć', null=True)
-    activity = models.IntegerField(choices=ACTIVITY, verbose_name='Aktywność fizyczna', null=True)
-    type = models.IntegerField(choices=TYPE, verbose_name="Rola", default=2)
+    age = models.DateField(verbose_name='Data urodzenia', null=True, blank=True)
+    height = models.FloatField(verbose_name='Wzrost', null=True, blank=True)
+    weight = models.FloatField(verbose_name='Waga', null=True, blank=True)
+    sex = models.IntegerField(choices=SEX, verbose_name='Płeć', null=True, default=0)
+    activity = models.IntegerField(choices=ACTIVITY, verbose_name='Aktywność fizyczna', null=True, default=0)
 
 
     def __str__(self):
         return self.age, self.height, self.weight, self.sex, self.activity
+
 
 
 @receiver(post_save, sender=User)
