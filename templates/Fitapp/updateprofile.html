@@ -1,13 +1,39 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+{% block ath %}
+<!-- jquery-ui needed for datepicker -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.css' %}">
+<script src="{% static '/js/jquery-ui.js' %}"></script>
+<!-- Load polish translation for datepicker -->
+<script src="{% static '/js/datepicker-pl.js' %}"></script>
+
+<script>
+  $(function() {
+    $( ".datepicker" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "1900:{% now "Y" %}",
+      showOn: "button",
+      buttonImage: "{% static 'img/calendar.gif' %}",
+      buttonImageOnly: true,
+      buttonText: "Wybierz datę",
+      regional: [ "pl" ]
+    });
+  });
+  </script>
+{% endblock %}
 {% block body %}
-<div class="jumbotron jumbotron-fluid">
-<div class="container">
-<form method="post">
+
+
+<header></header>
+<section class="section section-padded" style="top: -630px;">
+  <div class="container">
+    <p>Zaktualizuj swój profil:</p>
+    <form method="post">
   {% csrf_token %}
     {{ profile_form.as_p }}
-    <button type="submit" class="btn btn-outline-success">Zapisz i wyślij</button>
+    <button type="submit" class="btn btn-submit">Zapisz i wyślij</button>
 </form>
-</div>
 </div>
 
 {% endblock %}

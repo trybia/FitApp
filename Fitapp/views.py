@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login, models
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -9,18 +9,13 @@ from django.urls import reverse_lazy
 
 from django.views.generic import View, CreateView
 
-
+from Fitapp.models import Trainings
 from .forms import *
 # Create your views here.
 
 #tworzenie użytkownika
 class UserFormView(View):
-
-    def get(self, request):
-        form = UserForm
-        return render(request, 'Fitapp/useradd.html', {'form':form})
-
-    def post(self, request):
+     def post(self, request):
         form = UserForm(request.POST)
 
         if form.is_valid():
@@ -35,7 +30,7 @@ class UserFormView(View):
                     login(request, user)
                     return redirect('home')
         else:
-            return render(request, 'Fitapp/useradd.html', {'form':form})
+            return render(request, '/')
 
 
 
@@ -44,10 +39,6 @@ def MyHome(request):
 
 #logowanie
 class LoginView(View):
-    def get(self, request):
-        form = LoginForm
-        return render(request, 'Fitapp/useradd.html', {'form':form})
-
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -65,7 +56,7 @@ class LoginView(View):
 class UserProfileCreate(CreateView):
     model = UserProfile
     fields = '__all__'
-    template_name = 'Fitapp/useradd.html'
+    # template_name = 'Fitapp/useradd.html'
     success_url = reverse_lazy ('home')
 
 
@@ -74,7 +65,7 @@ class UserProfileCreate(CreateView):
 #@transaction.atomic
 def update_profile(request):
     if request.method == 'POST':
-        if request.user.userprofile.type == 100:
+        if request.user.is_superuser:
             profile_form = ManagerProfileForm(request.POST, instance=request.user.userprofile)
         else:
             profile_form = UserProfileForm(request.POST, instance=request.user.userprofile)
@@ -86,7 +77,7 @@ def update_profile(request):
             messages.error(request, ('Proszę poprawić bląd.'))
     else:
 
-        if request.user.userprofile.type == 100:
+        if request.user.is_superuser:
             profile_form = ManagerProfileForm(instance=request.user.userprofile)
         else:
             profile_form = UserProfileForm(instance=request.user.userprofile)
@@ -123,15 +114,23 @@ def manage_clients(request):
 @login_required
 #@transaction.atomic
 def manage_coaches(request):
-    if request.GET.get('delete'):
-        #nieskończona opcja kasowania relacji trener-klient
-        id = request.GET.get('delete')
+    # Przestań trenować u trenera o id podanym w parametrze
+    if request.GET.get('leave'):
+        coach_id = request.GET.get('leave')
+        Trainings.objects.filter(client=request.user).filter(trainer=User.objects.get(id=coach_id)).delete()
+        return redirect('/coaches')
+    # Trenuj u trenera o id podanym w parametrze
+    elif request.GET.get('enrol'):
+        coach_id = request.GET.get('enrol')
+        relation = Trainings(client=request.user,trainer=User.objects.get(id=coach_id))
+        relation.save()
         return redirect('/coaches')
     else:
-
+    # Wyświetl listę trenerów
         #https://stackoverflow.com/questions/41061706/django-query-filter-by-user-group
         coaches_list = User.objects.filter(groups__name='coaches')
 
+        print(type(coaches_list))
         # z dokumentacji: https://docs.djangoproject.com/en/1.11/topics/pagination/
         paginator = Paginator(coaches_list,25)
 
@@ -144,6 +143,7 @@ def manage_coaches(request):
         except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
             coaches = paginator.page(paginator.num_pages)
+
         return render(request, 'Fitapp/coaches.html', {'coaches': coaches})
 
 @login_required

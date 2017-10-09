@@ -49,3 +49,8 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance)
     instance.userprofile.save()
 
+class Trainings(models.Model):
+    client = models.ForeignKey(User,on_delete=models.CASCADE,related_name='client')
+    trainer = models.ForeignKey(User,on_delete=models.CASCADE,related_name='trainer')
+    class Meta:
+        unique_together = ('client', 'trainer',)

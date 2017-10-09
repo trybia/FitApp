@@ -20,10 +20,13 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         exclude = ('user','type',)
+        # https://stackoverflow.com/questions/16356289/how-to-show-datepicker-calender-on-datefield
+        widgets = {
+            'age': forms.DateInput(attrs={'class': 'datepicker'}),
+        }
 
 class ManagerProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         exclude = ('user',)
-
 
